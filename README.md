@@ -71,10 +71,10 @@ Y sus equivalentes:
 
 ### 🔧 Ejemplo de construcción
 Con Docker:
-```bash
 sudo docker build -t apache_custom ./docker_builds/apache
 sudo docker build -t nginx_custom ./docker_builds/nginx
 sudo docker build -t mysql_custom ./docker_builds/mysql
+```bash
 
 
 ## ⚙️ Estructura del Proyecto
