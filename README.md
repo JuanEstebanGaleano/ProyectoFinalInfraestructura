@@ -53,6 +53,29 @@ Implementar una infraestructura virtual segura y funcional que combine almacenam
 - Documentar el proceso completo en GitHub.
 
 ---
+## 🧱 Creación de Imágenes con Dockerfile y Containerfile
+
+Para la personalización de los servicios del proyecto (Apache, Nginx y MySQL), se construyeron imágenes personalizadas utilizando archivos **Dockerfile**, que contienen las instrucciones necesarias para definir el entorno, instalar dependencias y copiar los archivos del proyecto dentro del contenedor.
+
+Con el fin de asegurar compatibilidad tanto con **Docker** como con **Podman**, se duplicaron estos archivos bajo el nombre **Containerfile**, dado que ambos gestores de contenedores interpretan el mismo formato.
+
+### 📦 Archivos utilizados
+- `/docker_builds/apache/Dockerfile`  
+- `/docker_builds/nginx/Dockerfile`  
+- `/docker_builds/mysql/Dockerfile`  
+
+Y sus equivalentes:
+- `/docker_builds/apache/Containerfile`  
+- `/docker_builds/nginx/Containerfile`  
+- `/docker_builds/mysql/Containerfile`  
+
+### 🔧 Ejemplo de construcción
+Con Docker:
+```bash
+sudo docker build -t apache_custom ./docker_builds/apache
+sudo docker build -t nginx_custom ./docker_builds/nginx
+sudo docker build -t mysql_custom ./docker_builds/mysql
+------
 
 ## ⚙️ Estructura del Proyecto
 
