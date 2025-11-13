@@ -1,59 +1,76 @@
 #!/bin/bash
 # ------------------------------------------------------------
 # Script: restore_docker.sh
-# Autor: Esteban - Proyecto Final Infraestructura
+# Autor: Juan Esteban Galeano, Mariana Pienda, Santiago Rodas
+# Proyecto Final - Infraestructura Virtual
 # Objetivo: Restaurar contenedores Docker y montajes LVM/RAID
 # ------------------------------------------------------------
 
-echo "🧠 [1/8] Activando volúmenes LVM..."
+echo "🧠 [1/9] Activando volúmenes LVM..."
 sudo vgscan > /dev/null
 sudo lvscan > /dev/null
 sudo vgchange -ay
 
-echo "📂 [2/8] Montando volúmenes en /mnt..."
-sudo mount /dev/vg_apache/lv_apache /mnt/apache_vol
-sudo mount /dev/vg_mysql/lv_mysql /mnt/mysql_vol
-sudo mount /dev/vg_nginx/lv_nginx /mnt/nginx_vol
+echo "📂 [2/9] Montando volúmenes en /mnt..."
+sudo mount /dev/vg_apache/lv_apache /mnt/apache_vol 2>/dev/null
+sudo mount /dev/vg_mysql/lv_mysql /mnt/mysql_vol 2>/dev/null
+sudo mount /dev/vg_nginx/lv_nginx /mnt/nginx_vol 2>/dev/null
 
-echo "🧹 [3/8] Deteniendo Docker y limpiando bloqueos..."
-sudo systemctl stop docker
-sudo systemctl stop docker.socket
+echo "🧹 [3/9] Verificando si Podman está activo..."
+if systemctl is-active --quiet podman; then
+  echo "⚠️  Podman está ejecutándose. Deteniendo servicios para evitar conflicto con Docker..."
+  sudo systemctl stop podman
+  sudo pkill -9 podman 2>/dev/null
+  echo "✅ Podman detenido correctamente."
+else
+  echo "✔️  Podman no está activo. Continuando..."
+fi
+
+echo "🧹 [4/9] Deteniendo Docker y limpiando bloqueos previos..."
+sudo systemctl stop docker docker.socket 2>/dev/null
 sudo pkill -9 dockerd 2>/dev/null
 sudo pkill -9 containerd 2>/dev/null
 sudo pkill -9 runc 2>/dev/null
-sudo rm -rf /var/run/docker/runtime-runc/moby/*
+sudo rm -rf /var/run/docker/runtime-runc/moby/* 2>/dev/null
 
-echo "🚀 [4/8] Reiniciando servicio Docker..."
+echo "🚀 [5/9] Iniciando servicio Docker..."
 sudo systemctl start docker
+sleep 10
 
-echo "🔍 [5/8] Eliminando contenedores anteriores (si existen)..."
+if ! systemctl is-active --quiet docker; then
+  echo "❌ Error: Docker no pudo iniciarse. Revisa el servicio manualmente con 'sudo systemctl status docker'"
+  exit 1
+fi
+echo "✅ Docker iniciado correctamente."
+
+echo "🧩 [6/9] Eliminando contenedores anteriores (si existen)..."
 sudo docker rm -f cont_apache cont_mysql cont_nginx phpmyadmin 2>/dev/null
 
-echo "🐋 [6/8] Creando contenedores con volúmenes persistentes..."
+echo "🐋 [7/9] Creando contenedores con volúmenes persistentes..."
 
-# Apache
+# --- Apache ---
 sudo docker run -d --name cont_apache \
   --restart=always \
   -p 8080:80 \
   -v /mnt/apache_vol:/var/www/html:Z \
-  apache_custom
+  apache_custom || { echo "❌ Error al crear contenedor Apache"; exit 1; }
 
-# MySQL
+# --- MySQL ---
 sudo docker run -d --name cont_mysql \
   --restart=always \
   -e MYSQL_ROOT_PASSWORD=root \
   -e MYSQL_DATABASE=clientes \
   -v /mnt/mysql_vol:/var/lib/mysql:Z \
-  mysql_custom
+  mysql_custom || { echo "❌ Error al crear contenedor MySQL"; exit 1; }
 
-# Nginx
+# --- Nginx ---
 sudo docker run -d --name cont_nginx \
   --restart=always \
   -p 8081:80 \
   -v /mnt/nginx_vol:/usr/share/nginx/html:Z \
-  nginx_custom
+  nginx_custom || { echo "❌ Error al crear contenedor Nginx"; exit 1; }
 
-# PhpMyAdmin
+# --- PhpMyAdmin ---
 sudo docker run -d --name phpmyadmin \
   --restart=always \
   -e PMA_HOST=cont_mysql \
@@ -61,13 +78,13 @@ sudo docker run -d --name phpmyadmin \
   -e PMA_PASSWORD=root \
   -p 8082:80 \
   --link cont_mysql:db \
-  phpmyadmin/phpmyadmin
+  phpmyadmin/phpmyadmin || { echo "❌ Error al crear contenedor PhpMyAdmin"; exit 1; }
 
-echo "🧩 [7/8] Verificando estado de los contenedores..."
-sudo docker ps
+echo "🔍 [8/9] Verificando estado de los contenedores..."
+sudo docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
-echo "✅ [8/8] Restauración completa. Accede desde:"
-echo "  - Apache:     http://localhost:8080"
-echo "  - Nginx:      http://localhost:8081"
-echo "  - PhpMyAdmin: http://localhost:8082"
+echo "✅ [9/9] Restauración completa. Accede desde:"
+echo "  🌐 Apache:     http://localhost:8080"
+echo "  🌐 Nginx:      http://localhost:8081"
+echo "  💾 PhpMyAdmin: http://localhost:8082"
 echo "------------------------------------------------------------"
