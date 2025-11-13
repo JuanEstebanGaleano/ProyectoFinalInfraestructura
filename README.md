@@ -75,7 +75,7 @@ Con Docker:
 sudo docker build -t apache_custom ./docker_builds/apache
 sudo docker build -t nginx_custom ./docker_builds/nginx
 sudo docker build -t mysql_custom ./docker_builds/mysql
-------
+
 
 ## ⚙️ Estructura del Proyecto
 
