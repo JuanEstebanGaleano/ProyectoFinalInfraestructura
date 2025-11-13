@@ -6,17 +6,25 @@
 # Objetivo: Restaurar contenedores Docker y montajes LVM/RAID
 # ------------------------------------------------------------
 
-echo "🧠 [1/9] Activando volúmenes LVM..."
+echo "🧠 [1/10] Activando volúmenes LVM..."
 sudo vgscan > /dev/null
 sudo lvscan > /dev/null
 sudo vgchange -ay
 
-echo "📂 [2/9] Montando volúmenes en /mnt..."
+echo "📂 [2/10] Montando volúmenes en /mnt..."
 sudo mount /dev/vg_apache/lv_apache /mnt/apache_vol 2>/dev/null
 sudo mount /dev/vg_mysql/lv_mysql /mnt/mysql_vol 2>/dev/null
 sudo mount /dev/vg_nginx/lv_nginx /mnt/nginx_vol 2>/dev/null
 
-echo "🧹 [3/9] Verificando si Podman está activo..."
+echo "🔐 [3/10] Asignando permisos completos a los volúmenes..."
+# Permisos de propietario según servicio:
+sudo chown -R 33:33 /mnt/apache_vol   # Apache (www-data)
+sudo chown -R 999:999 /mnt/mysql_vol  # MySQL
+sudo chown -R 101:101 /mnt/nginx_vol  # Nginx
+# Permisos totales para evitar bloqueos
+sudo chmod -R 777 /mnt/apache_vol /mnt/mysql_vol /mnt/nginx_vol
+
+echo "🧹 [4/10] Verificando si Podman está activo..."
 if systemctl is-active --quiet podman; then
   echo "⚠️  Podman está ejecutándose. Deteniendo servicios para evitar conflicto con Docker..."
   sudo systemctl stop podman
@@ -26,14 +34,12 @@ else
   echo "✔️  Podman no está activo. Continuando..."
 fi
 
-echo "🧹 [4/9] Deteniendo Docker y limpiando bloqueos previos..."
+echo "🧹 [5/10] Deteniendo Docker y limpiando bloqueos previos..."
 sudo systemctl stop docker docker.socket 2>/dev/null
-sudo pkill -9 dockerd 2>/dev/null
-sudo pkill -9 containerd 2>/dev/null
-sudo pkill -9 runc 2>/dev/null
+sudo pkill -9 dockerd containerd runc 2>/dev/null
 sudo rm -rf /var/run/docker/runtime-runc/moby/* 2>/dev/null
 
-echo "🚀 [5/9] Iniciando servicio Docker..."
+echo "🚀 [6/10] Iniciando servicio Docker..."
 sudo systemctl start docker
 sleep 10
 
@@ -43,10 +49,10 @@ if ! systemctl is-active --quiet docker; then
 fi
 echo "✅ Docker iniciado correctamente."
 
-echo "🧩 [6/9] Eliminando contenedores anteriores (si existen)..."
+echo "🧩 [7/10] Eliminando contenedores anteriores (si existen)..."
 sudo docker rm -f cont_apache cont_mysql cont_nginx phpmyadmin 2>/dev/null
 
-echo "🐋 [7/9] Creando contenedores con volúmenes persistentes..."
+echo "🐋 [8/10] Creando contenedores con volúmenes persistentes..."
 
 # --- Apache ---
 sudo docker run -d --name cont_apache \
@@ -80,11 +86,12 @@ sudo docker run -d --name phpmyadmin \
   --link cont_mysql:db \
   phpmyadmin/phpmyadmin || { echo "❌ Error al crear contenedor PhpMyAdmin"; exit 1; }
 
-echo "🔍 [8/9] Verificando estado de los contenedores..."
+echo "🔍 [9/10] Verificando estado de los contenedores..."
 sudo docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
-echo "✅ [9/9] Restauración completa. Accede desde:"
+echo "✅ [10/10] Restauración completa. Accede desde:"
 echo "  🌐 Apache:     http://localhost:8080"
 echo "  🌐 Nginx:      http://localhost:8081"
 echo "  💾 PhpMyAdmin: http://localhost:8082"
 echo "------------------------------------------------------------"
+
