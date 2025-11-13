@@ -82,20 +82,22 @@ sudo docker build -t mysql_custom ./docker_builds/mysql
 ```bash
 ProyectoFinalInfraestructura/
 │
-├── apache/
-│   ├── Dockerfile
-│   └── index.html
-│
-├── nginx/
-│   ├── Dockerfile
-│   └── index.html
-│
-├── mysql/
-│   └── Dockerfile
-│
+├── BITACORA.md
+├── README.md
+├── Comandos.txt
+├── Proyecto Final Infraestructura.pdf
+├── docker_builds/
+│   ├── apache/
+│   │   ├── Dockerfile
+│   │   └── Containerfile
+|   |   └── index.html
+│   ├── mysql/
+│   │   ├── Dockerfile
+│   │   └── Containerfile
+│   └── nginx/
+│       ├── Dockerfile
+│       └── Containerfile
+│        └── index.html
 ├── scripts/
 │   └── restore_docker.sh
-│
-├── Proyecto Final.docx
-├── BITACORA.md
-└── README.md
+|   └── restore_podman.sh
