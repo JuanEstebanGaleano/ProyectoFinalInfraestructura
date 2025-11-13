@@ -52,6 +52,11 @@ echo "✅ Docker iniciado correctamente."
 echo "🧩 [7/10] Eliminando contenedores anteriores (si existen)..."
 sudo docker rm -f cont_apache cont_mysql cont_nginx phpmyadmin 2>/dev/null
 
+echo "🔧 Liberando puertos 8080, 8081 y 8082..."
+sudo fuser -k 8080/tcp 2>/dev/null
+sudo fuser -k 8081/tcp 2>/dev/null
+sudo fuser -k 8082/tcp 2>/dev/null
+
 echo "🐋 [8/10] Creando contenedores con volúmenes persistentes..."
 
 # --- Apache ---
