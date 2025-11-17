@@ -91,8 +91,9 @@ sudo podman run -d --name cont_nginx -p 8081:80 -v /mnt/nginx_vol:/usr/share/ngi
 sudo podman ps
 
 ------------------------------------------------------------
-📊 Fase 7: Monitoreo con Netdata
-🟦 Netdata con Docker
+## 📊 Fase 7: Monitoreo con Netdata
+
+## 🟦 Netdata con Docker
 sudo docker run -d --name netdata \
   -p 19999:19999 \
   --cap-add SYS_PTRACE \
@@ -104,7 +105,7 @@ sudo docker run -d --name netdata \
   -v /sys:/host/sys:ro \
   netdata/netdata
 
-🟩 Netdata con Podman
+## 🟩 Netdata con Podman
 sudo podman run -d --name netdata \
   -p 19999:19999 \
   --network red_app \
