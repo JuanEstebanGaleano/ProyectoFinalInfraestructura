@@ -90,10 +90,34 @@ sudo docker run -d --name phpmyadmin \
   -p 8082:80 \
   --link cont_mysql:db \
   phpmyadmin/phpmyadmin || { echo "❌ Error al crear contenedor PhpMyAdmin"; exit 1; }
-
-echo "🔍 [9/10] Verificando estado de los contenedores..."
+  
+echo "📡 [9/10] Verificando estado de los contenedores..."
 sudo docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
+echo "📊 [9.5/10] Gestionando Netdata..."
+
+# Verificar si existe un contenedor netdata previo
+if sudo docker ps -a --format '{{.Names}}' | grep -q "^netdata$"; then
+  echo "⚠  Netdata ya existe. Eliminando contenedor viejo..."
+  sudo docker rm -f netdata >/dev/null 2>&1
+fi
+
+echo "🚀 Iniciando Netdata..."
+sudo docker run -d --name netdata \
+  -p 19999:19999 \
+  --cap-add SYS_PTRACE \
+  --security-opt apparmor=unconfined \
+  -v netdata_lib:/var/lib/netdata \
+  -v netdata_cache:/var/cache/netdata \
+  -v /etc/passwd:/host/etc/passwd:ro \
+  -v /etc/group:/host/etc/group:ro \
+  -v /proc:/host/proc:ro \
+  -v /sys:/host/sys:ro \
+  -v /etc/os-release:/host/etc/os-release:ro \
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  netdata/netdata || { echo "❌ Error al iniciar Netdata"; exit 1; }
+
+echo "📊 Netdata ejecutándose en: http://localhost:19999"
 echo "✅ [10/10] Restauración completa. Accede desde:"
 echo "  🌐 Apache:     http://localhost:8080"
 echo "  🌐 Nginx:      http://localhost:8081"
