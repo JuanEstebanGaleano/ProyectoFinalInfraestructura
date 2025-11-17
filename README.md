@@ -125,7 +125,7 @@ ProyectoFinalInfraestructura/
 │
 ├── BITACORA.md
 ├── README.md
-├── Comandos.txt
+├── Comandos.md
 ├── Proyecto Final.pdf
 ├── ProyectoFinalInfra
 │   ├── apache/
