@@ -84,10 +84,15 @@ http://localhost:19999
 ## 📌 Beneficios dentro del proyecto
 
 -Monitoreo profesional en tiempo real.
+
 -Validación del rendimiento de RAID/LVM bajo carga.
+
 -Seguimiento de contenedores Docker y Podman.
+
 -Supervisión de MySQL, Apache y Nginx en tiempo real.
+
 -Alertas y gráficos instantáneos
+
 ---
 
 ### 📦 Archivos utilizados
