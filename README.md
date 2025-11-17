@@ -127,7 +127,7 @@ ProyectoFinalInfraestructura/
 ├── README.md
 ├── Comandos.txt
 ├── Proyecto Final Infraestructura.pdf
-├── docker_builds/
+├── ProyectoFinalInfra
 │   ├── apache/
 │   │   ├── Dockerfile
 │   │   └── Containerfile
@@ -136,9 +136,15 @@ ProyectoFinalInfraestructura/
 │   │   ├── Dockerfile
 │   │   └── Containerfile
 │   └── nginx/
-│       ├── Dockerfile
-│       └── Containerfile
-│        └── index.html
+│   |    ├── Dockerfile
+│   |    └── Containerfile
+│   |     └── index.html
+│   └── netdata/
+│       ├── go.d
+|          └── cgroups.conf
+|          └── podman.conf
+│       └── system
+│          └── podman.socket.override.conf
 ├── scripts/
 │   └── restore_docker.sh
 |   └── restore_podman.sh
