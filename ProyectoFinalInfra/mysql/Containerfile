@@ -1,4 +1,11 @@
 FROM mysql:8.0
+<<<<<<< HEAD
 ENV MYSQL_ROOT_PASSWORD=root
 ENV MYSQL_DATABASE=clientes
+=======
+
+ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_DATABASE=clientes
+
+>>>>>>> 09570298500b3ccb2f3f0fab17beabc3df0aad82
 EXPOSE 3306

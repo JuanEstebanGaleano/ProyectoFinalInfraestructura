@@ -1,3 +1,7 @@
 FROM nginx:latest
+<<<<<<< HEAD
 COPY index.html /usr/share/nginx/html/index.html
+=======
+COPY ./index.html /usr/share/nginx/html/index.html
+>>>>>>> 09570298500b3ccb2f3f0fab17beabc3df0aad82
 EXPOSE 80

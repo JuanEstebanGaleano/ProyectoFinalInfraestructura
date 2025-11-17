@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Imagen base
 FROM ubuntu:22.04
 
@@ -5,5 +6,9 @@ FROM ubuntu:22.04
 RUN apt update && apt install -y apache2 && apt clean
 
 # Configurar servicio
+=======
+FROM ubuntu:22.04
+RUN apt update && apt install -y apache2 && apt clean
+>>>>>>> 09570298500b3ccb2f3f0fab17beabc3df0aad82
 EXPOSE 80
 CMD ["apachectl", "-D", "FOREGROUND"]

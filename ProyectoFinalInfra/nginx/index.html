@@ -1,1 +1,175 @@
-<h1>Servidor Nginx funcionando correctamente</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Técnico - Infraestructura Virtual</title>
+  <style>
+    * {margin: 0; padding: 0; box-sizing: border-box;}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0d1b2a, #1b263b, #0a9396);
+      color: #fff;
+      min-height: 100vh;
+      text-align: center;
+      padding-bottom: 60px;
+    }
+    header {
+      background: rgba(0,0,0,0.4);
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 2.2em;
+      color: #00e0ff;
+    }
+    h2 {
+      font-size: 1.1em;
+      color: #ccc;
+      margin-top: 5px;
+    }
+    section {
+      max-width: 900px;
+      margin: 40px auto;
+      background: rgba(255,255,255,0.05);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      animation: fadeIn 1s ease-in;
+    }
+    section h3 {
+      color: #00e0ff;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 5px;
+      text-align: left;
+    }
+    ul { text-align: left; margin: 15px 0; padding-left: 25px; }
+    li { margin-bottom: 6px; }
+    .status {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .card {
+      background: rgba(0,0,0,0.3);
+      width: 250px;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .online { color: #00ff6a; }
+    .offline { color: #ff4b4b; }
+    pre {
+      background: rgba(0,0,0,0.4);
+      padding: 12px;
+      border-radius: 10px;
+      color: #00ffbf;
+      overflow-x: auto;
+      font-size: 0.9em;
+    }
+    .diagram {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+      font-family: monospace;
+      color: #00ffc8;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.85em;
+      opacity: 0.7;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(15px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Panel Técnico — Infraestructura Virtual</h1>
+    <h2>Supervisión de contenedores y arquitectura</h2>
+  </header>
+
+  <section>
+    <h3>📡 Estado de Servicios</h3>
+    <div class="status">
+      <div class="card">
+        <h4>Apache</h4>
+        <p class="online">🟢 Activo (Puerto 8080)</p>
+      </div>
+      <div class="card">
+        <h4>MySQL</h4>
+        <p class="online">🟢 Activo (Puerto 3306)</p>
+      </div>
+      <div class="card">
+        <h4>Nginx</h4>
+        <p class="online">🟢 Activo (Puerto 8081)</p>
+      </div>
+      <div class="card">
+        <h4>phpMyAdmin</h4>
+        <p class="offline">🔴 En espera (Puerto 8082)</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h3>⚙️ Arquitectura General</h3>
+    <div class="diagram">
+<pre>
+                ┌──────────────────────────────┐
+                │          RAID 1              │
+                │ (Discos redundantes sdb/sdc) │
+                └────────────┬─────────────────┘
+                             │
+                   ┌─────────▼─────────┐
+                   │       LVM         │
+                   │ Volúmenes Lógicos │
+                   └─────────┬─────────┘
+                             │
+        ┌──────────┬─────────┴─────────┬──────────┐
+        │          │                   │          │
+┌───────▼──────┐┌──▼────────┐   ┌──────▼──────┐┌───▼───────┐
+│ Apache Vol   ││ MySQL Vol │   │ Nginx Vol   ││ phpMyAdmin│
+│ /mnt/apache  ││ /mnt/mysql│   │ /mnt/nginx  ││ /mnt/pma  │
+└──────────────┘└───────────┘   └─────────────┘└───────────┘
+</pre>
+    </div>
+  </section>
+
+  <section>
+    <h3>🧰 Comandos de Monitoreo</h3>
+    <pre>
+# Ver contenedores activos
+sudo docker ps
+
+# Reiniciar contenedores
+sudo docker restart cont_apache cont_mysql cont_nginx
+
+# Ver logs de MySQL
+sudo docker logs cont_mysql
+
+# Acceder al contenedor
+sudo docker exec -it cont_apache /bin/bash
+    </pre>
+  </section>
+
+  <section>
+    <h3>📘 Información del Proyecto</h3>
+    <ul>
+      <li><b>Autores:</b> Juan Esteban Galeano, Mariana Pienda, Santiago Rodas</li>
+      <li><b>Materia:</b> Infraestructura Virtual</li>
+      <li><b>Universidad:</b> Universidad del Quindío</li>
+      <li><b>Objetivo:</b> Integrar RAID, LVM y contenedores Docker/Podman en un entorno persistente.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>© 2025 — Universidad del Quindío · Facultad de Ingeniería · Panel Técnico Nginx</p>
+  </footer>
+</body>
+</html>

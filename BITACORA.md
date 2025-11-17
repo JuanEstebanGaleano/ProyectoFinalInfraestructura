@@ -897,6 +897,75 @@ apache, por ende, dice que el nombre ya está en uso
 
 ![](media/image59.png){width="6.1375in" height="0.5673611111111111in"}
 
+<<<<<<< HEAD
+=======
+5. **Integración de Netdata (Monitoreo del Sistema)**
+
+Netdata es una herramienta de monitoreo en tiempo real que permite visualizar métricas detalladas del sistema y de los contenedores. Su incorporación al proyecto tiene como finalidad supervisar el rendimiento de los servicios Apache, MySQL, Nginx y phpMyAdmin, así como el estado de los volúmenes RAID/LVM y el uso de recursos del sistema.
+
+Netdata proporciona gráficos en tiempo real de CPU, memoria, procesos, disco, red, tráfico entre contenedores y rendimiento de servicios web y bases de datos. Esto añade un componente de observabilidad fundamental para la administración moderna de infraestructura.
+
+Ejecución del contenedor Netdata con Podman
+
+Para implementar Netdata no fue necesario crear Dockerfile ni Containerfile, ya que existe una imagen oficial completamente funcional. Se ejecutó con permisos adecuados para leer métricas del sistema host:
+
+sudo podman run -d --name netdata \
+  -p 19999:19999 \
+  -v netdataconfig:/etc/netdata:Z \
+  -v netdatalib:/var/lib/netdata:Z \
+  -v netdatacache:/var/cache/netdata:Z \
+  --cap-add SYS_PTRACE \
+  --security-opt label=disable \
+  docker.io/netdata/netdata:latest
+
+**Explicación técnica del comando**
+
+-p 19999:19999: expone el panel web para monitoreo.
+
+Volúmenes persistentes: garantizan que Netdata mantenga configuraciones e historiales.
+
+--cap-add SYS_PTRACE: permite inspeccionar procesos del host.
+
+--security-opt label=disable: necesario para que Podman permita acceso a métricas del sistema.
+
+Imagen oficial: netdata/netdata:latest.
+
+Acceso al dashboard
+
+Luego de iniciar el contenedor, se accede a la interfaz gráfica mediante:
+
+http://localhost:19999
+
+
+Desde allí se puede visualizar:
+
+Estado del sistema (CPU, RAM, carga, I/O).
+
+Actividad de contenedores Apache, MySQL, Nginx y phpMyAdmin.
+
+Lecturas/escrituras en RAID 1 (md0, md1, md2).
+
+Uso de volúmenes lógicos LVM.
+
+Tráfico de red entre contenedores internos de Podman.
+
+Alertas en tiempo real sobre fallos o sobrecargas.
+
+Importancia de Netdata dentro del proyecto
+
+La inclusión de Netdata permitió:
+
+Observar en tiempo real el rendimiento del sistema y de cada servicio.
+
+Validar la correcta operación de los volúmenes RAID/LVM bajo carga.
+
+Identificar cuellos de botella potenciales.
+
+Confirmar la estabilidad de los contenedores bajo Docker y Podman.
+
+Incorporar un componente de monitoreo profesional típico en entornos DevOps.
+
+>>>>>>> 09570298500b3ccb2f3f0fab17beabc3df0aad82
 **Conclusiones**
 
 El desarrollo del proyecto permitió implementar una infraestructura

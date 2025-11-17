@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proyecto Final - Infraestructura Virtual</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #002147, #004080);
+      color: white;
+      text-align: center;
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    header img {
+      position: absolute;
+      left: 40px;
+      width: 80px;
+      height: auto;
+    }
+    h1 {
+      color: #ffcc00;
+      font-size: 2.5em;
+      text-shadow: 1px 1px 10px rgba(255,255,255,0.2);
+    }
+    h2 { margin-top: 10px; font-weight: normal; font-size: 1.2em; opacity: 0.9; }
+    section {
+      max-width: 900px;
+      margin: 40px auto;
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      text-align: left;
+      animation: fadeIn 1s ease-in;
+    }
+    section h3 {
+      color: #ffcc00;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 5px;
+    }
+    ul { margin: 15px 0; padding-left: 20px; }
+    li { margin-bottom: 6px; }
+    pre {
+      background: rgba(0,0,0,0.4);
+      padding: 10px;
+      border-radius: 10px;
+      color: #ffcc00;
+      overflow-x: auto;
+      font-size: 0.95em;
+    }
+    .links {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .btn {
+      display: inline-block;
+      background: #ffcc00;
+      color: #002147;
+      padding: 10px 25px;
+      border-radius: 8px;
+      margin: 10px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    .btn:hover {
+      background: #fff;
+      color: #003b7a;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      opacity: 0.7;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(15px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://universidadesgratuitas.com/wp-content/uploads/2021/03/Universidad-del-Quindio.png" alt="Logo UQ">
+    <div>
+      <h1>Proyecto Final — Infraestructura Virtual</h1>
+      <h2>Juan Esteban Galeano · Mariana Pienda · Santiago Rodas</h2>
+      <p>Universidad del Quindío — 2025</p>
+    </div>
+  </header>
+
+  <section>
+    <h3>🧠 Descripción del Proyecto</h3>
+    <p>
+      Este proyecto implementa una infraestructura virtual que integra tecnologías de almacenamiento redundante (<b>RAID 1</b>),
+      administración lógica de volúmenes (<b>LVM</b>) y virtualización de servicios mediante <b>Docker</b> y <b>Podman</b>.  
+      Los servicios Apache, MySQL y Nginx operan de forma aislada y persistente sobre volúmenes montados en dispositivos RAID,
+      demostrando la integración entre almacenamiento, virtualización y contenedores.
+    </p>
+  </section>
+
+  <section>
+    <h3>🎯 Objetivos</h3>
+    <ul>
+      <li>Implementar un sistema de almacenamiento redundante con <b>RAID 1</b>.</li>
+      <li>Gestionar volúmenes lógicos con <b>LVM</b> para flexibilidad.</li>
+      <li>Construir imágenes personalizadas con <b>Dockerfile</b>.</li>
+      <li>Garantizar persistencia de datos mediante volúmenes físicos.</li>
+      <li>Validar la interoperabilidad de <b>Docker</b> y <b>Podman</b>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>🧰 Comandos principales</h3>
+    <h4>📀 RAID 1</h4>
+    <pre>
+sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdb /dev/sdc
+sudo mdadm --create /dev/md1 --level=1 --raid-devices=2 /dev/sdd /dev/sde
+sudo mdadm --create /dev/md2 --level=1 --raid-devices=2 /dev/sdf /dev/sdg
+    </pre>
+
+    <h4>💾 LVM</h4>
+    <pre>
+sudo pvcreate /dev/md0 /dev/md1 /dev/md2
+sudo vgcreate vg_apache /dev/md0
+sudo vgcreate vg_mysql /dev/md1
+sudo vgcreate vg_nginx /dev/md2
+sudo lvcreate -n lv_apache -l 100%FREE vg_apache
+sudo lvcreate -n lv_mysql -l 100%FREE vg_mysql
+sudo lvcreate -n lv_nginx -l 100%FREE vg_nginx
+    </pre>
+
+    <h4>🐳 Docker</h4>
+    <pre>
+sudo docker build -t apache_custom ~/docker_builds/apache
+sudo docker run -d --name cont_apache -p 8080:80 -v /mnt/apache_vol:/var/www/html:Z apache_custom
+sudo docker run -d --name cont_mysql -e MYSQL_ROOT_PASSWORD=root -v /mnt/mysql_vol:/var/lib/mysql:Z mysql_custom
+sudo docker run -d --name cont_nginx -p 8081:80 -v /mnt/nginx_vol:/usr/share/nginx/html:Z nginx_custom
+    </pre>
+
+    <h4>🐋 Podman</h4>
+    <pre>
+sudo podman pull docker-daemon:apache_custom:latest
+sudo podman run -d --name cont_apache -p 9090:80 -v /mnt/apache_vol:/var/www/html:Z apache_custom
+    </pre>
+  </section>
+
+  <section>
+    <h3>📦 Servicios desplegados</h3>
+    <div class="links">
+      <a href="http://localhost:8080" class="btn" target="_blank">Apache</a>
+      <a href="http://localhost:8081" class="btn" target="_blank">Nginx</a>
+      <a href="http://localhost:8082" class="btn" target="_blank">phpMyAdmin</a>
+    </div>
+  </section>
+
+  <section>
+    <h3>🔗 Repositorio del Proyecto</h3>
+    <p>Explora el código y documentación completa en GitHub:</p>
+    <p><a href="https://github.com/JuanEstebanGaleano/ProyectoFinalInfraestructura.git" target="_blank" style="color:#ffcc00;">
+      github.com/JuanEstebanGaleano/ProyectoFinalInfraestructura
+    </a></p>
+  </section>
+
+  <footer>
+    <p>© 2025 — Universidad del Quindío · Facultad de Ingeniería · Infraestructura Virtual</p>
+  </footer>
+</body>
+</html>
