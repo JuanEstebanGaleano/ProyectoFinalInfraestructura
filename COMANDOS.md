@@ -91,15 +91,42 @@ sudo podman run -d --name cont_nginx -p 8081:80 -v /mnt/nginx_vol:/usr/share/ngi
 sudo podman ps
 
 ------------------------------------------------------------
+📊 Fase 7: Monitoreo con Netdata
+🟦 Netdata con Docker
+sudo docker run -d --name netdata \
+  -p 19999:19999 \
+  --cap-add SYS_PTRACE \
+  -v netdata_lib:/var/lib/netdata \
+  -v netdata_cache:/var/cache/netdata \
+  -v /etc/passwd:/host/etc/passwd:ro \
+  -v /etc/group:/host/etc/group:ro \
+  -v /proc:/host/proc:ro \
+  -v /sys:/host/sys:ro \
+  netdata/netdata
 
-## 🧠 Fase 7: Automatización con Script
+🟩 Netdata con Podman
+sudo podman run -d --name netdata \
+  -p 19999:19999 \
+  --network red_app \
+  --cap-add=SYS_PTRACE \
+  -v /proc:/host/proc:ro \
+  -v /sys:/host/sys:ro \
+  -v /etc/passwd:/host/etc/passwd:ro \
+  -v /etc/group:/host/etc/group:ro \
+  netdata/netdata
+
+
+📍Acceso al panel:
+👉 http://localhost:19999
+------------------------------------------------------------
+## 🧠 Fase 8: Automatización con Script
 
 sudo bash scripts/restore_docker.sh
 sudo bash scripts/restore_podman.sh
 
 ------------------------------------------------------------
 
-## 🧹 Fase 8: Limpieza y Mantenimiento
+## 🧹 Fase 9: Limpieza y Mantenimiento
 
 sudo systemctl stop docker
 sudo systemctl stop podman
