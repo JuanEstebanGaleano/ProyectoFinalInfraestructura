@@ -1,16 +1,4 @@
 #!/bin/bash
-# ==========================================================
-# 🔹 Proyecto Final Infraestructura - Fase 5 (Podman)
-# 🔹 Autor: Esteban Galeano
-# 🔹 Script: start_podman.sh
-# 🔹 Descripción:
-#   - Detiene y limpia contenedores Docker
-#   - Monta LVM/RAID con persistencia
-#   - Asigna permisos correctos
-#   - Crea red y levanta contenedores Podman:
-#     Apache, MySQL, Nginx y phpMyAdmin
-# ==========================================================
-
 set -e
 
 echo "=========================================================="
@@ -50,9 +38,9 @@ echo ""
 echo "=========================================================="
 echo "🔐 3) Corrigiendo permisos sobre los volúmenes..."
 echo "=========================================================="
-sudo chown -R 33:33 /mnt/apache_vol    # Apache -> www-data
-sudo chown -R 999:999 /mnt/mysql_vol   # MySQL -> mysql
-sudo chown -R 101:101 /mnt/nginx_vol   # Nginx -> nginx
+sudo chown -R 33:33  /mnt/apache_vol
+sudo chown -R 999:999 /mnt/mysql_vol
+sudo chown -R 101:101 /mnt/nginx_vol
 sudo chmod -R 777 /mnt/apache_vol /mnt/mysql_vol /mnt/nginx_vol
 
 echo ""
@@ -70,7 +58,15 @@ echo ""
 echo "=========================================================="
 echo "🧹 5) Eliminando contenedores Podman antiguos..."
 echo "=========================================================="
-sudo podman rm -f cont_apache cont_mysql cont_nginx phpmyadmin 2>/dev/null || true
+
+for c in cont_apache cont_mysql cont_nginx phpmyadmin netdata; do
+  if sudo podman ps -a --format "{{.Names}}" | grep -q "^$c$"; then
+    echo "→ Eliminando contenedor existente: $c"
+    sudo podman rm -f $c >/dev/null 2>&1 || true
+  fi
+done
+
+sudo podman rm -f $(sudo podman ps -aq) >/dev/null 2>&1 || true
 
 echo ""
 echo "=========================================================="
@@ -82,19 +78,19 @@ sudo podman run -d --name cont_mysql --network red_app \
   -e MYSQL_ROOT_PASSWORD=root \
   -e MYSQL_DATABASE=clientes \
   -v /mnt/mysql_vol:/var/lib/mysql:Z \
-  docker.io/library/mysql_custom:latest
+  mysql_custom:latest
 
 # Apache
 sudo podman run -d --name cont_apache --network red_app \
   -p 8080:80 \
   -v /mnt/apache_vol:/var/www/html:Z \
-  docker.io/library/apache_custom:latest
+  apache_custom:latest
 
 # Nginx
 sudo podman run -d --name cont_nginx --network red_app \
   -p 8081:80 \
   -v /mnt/nginx_vol:/usr/share/nginx/html:Z \
-  docker.io/library/nginx_custom:latest
+  nginx_custom:latest
 
 # phpMyAdmin
 sudo podman run -d --name phpmyadmin --network red_app \
@@ -103,6 +99,27 @@ sudo podman run -d --name phpmyadmin --network red_app \
   -e PMA_PASSWORD=root \
   -p 8082:80 \
   docker.io/phpmyadmin/phpmyadmin:latest
+
+# NETDATA
+echo ""
+echo "=========================================================="
+echo "📊 6.1) Iniciando Netdata (monitoring)..."
+echo "=========================================================="
+
+sudo podman run -d --name netdata --network host \
+  --cap-add SYS_PTRACE \
+  --security-opt=apparmor=unconfined \
+  -v netdataconfig:/etc/netdata \
+  -v netdatalib:/var/lib/netdata \
+  -v netdatacache:/var/cache/netdata \
+  -v /etc/passwd:/host/etc/passwd:ro \
+  -v /etc/group:/host/etc/group:ro \
+  -v /proc:/host/proc:ro \
+  -v /sys:/host/sys:ro \
+  -p 19999:19999 \
+  docker.io/netdata/netdata:latest
+
+echo "✅ Netdata está corriendo en: http://localhost:19999"
 
 echo ""
 echo "=========================================================="
@@ -118,4 +135,72 @@ echo "Apache:     http://localhost:8080"
 echo "Nginx:      http://localhost:8081"
 echo "phpMyAdmin: http://localhost:8082  (root / root)"
 echo "MySQL:      cont_mysql (interno)"
+echo "Netdata:    http://localhost:19999"
 echo "----------------------------------------------------------"
+echo ""
+echo "=========================================================="
+echo "🩺 8) Health-Check del entorno"
+echo "=========================================================="
+
+LOG_FILE="/var/log/infra_health.log"
+sudo touch $LOG_FILE
+sudo chmod 777 $LOG_FILE
+
+health_log () {
+  echo "$(date '+%Y-%m-%d %H:%M:%S')  $1" | tee -a $LOG_FILE
+}
+
+check_container () {
+  local name=$1
+  if sudo podman ps --format "{{.Names}}" | grep -q "^$name$"; then
+    echo -e "🟢 $name está ejecutándose"
+    health_log "OK: $name ejecutándose"
+  else
+    echo -e "🔴 $name NO está ejecutándose"
+    health_log "FAIL: $name no está ejecutándose"
+  fi
+}
+
+check_port () {
+  local port=$1
+  local service=$2
+
+  if sudo ss -tuln | grep -q ":$port"; then
+    echo -e "🟢 Puerto $port ($service) está activo"
+    health_log "OK: Puerto $port ($service) activo"
+  else
+    echo -e "🔴 Puerto $port ($service) NO está activo"
+    health_log "FAIL: Puerto $port ($service) no está activo"
+  fi
+}
+
+echo "📦 Verificando contenedores..."
+
+check_container cont_apache
+check_container cont_nginx
+check_container cont_mysql
+check_container phpmyadmin
+check_container netdata
+
+echo ""
+echo "🌐 Verificando puertos expuestos..."
+
+check_port 8080 "Apache"
+check_port 8081 "Nginx"
+check_port 8082 "phpMyAdmin"
+check_port 3306 "MySQL"
+check_port 19999 "Netdata"
+
+echo ""
+echo "=========================================================="
+echo "📋 Resumen del estado del sistema"
+echo "=========================================================="
+
+OK_COUNT=$(grep -c "OK:" $LOG_FILE)
+FAIL_COUNT=$(grep -c "FAIL:" $LOG_FILE)
+
+echo "   🟢 Servicios correctos: $OK_COUNT"
+echo "   🔴 Servicios con error: $FAIL_COUNT"
+echo ""
+echo "📄 Log completo en: $LOG_FILE"
+echo "=========================================================="
