@@ -36,6 +36,7 @@ El objetivo fue diseñar un entorno modular, persistente y automatizado que inte
 | **Nginx** | Servidor web adicional para balanceo y pruebas. |
 | **MySQL** | Base de datos con persistencia en LVM. |
 | **phpMyAdmin** | Interfaz web para gestionar la base de datos. |
+| **NetData** | Monitoreo en tiempo real del sistema y contenedores. |
 | **Bash Script (`restore_docker.sh`)** | Automatiza el montaje LVM y restauración de contenedores. |
 
 ---
@@ -58,6 +59,36 @@ Implementar una infraestructura virtual segura y funcional que combine almacenam
 Para la personalización de los servicios del proyecto (Apache, Nginx y MySQL), se construyeron imágenes personalizadas utilizando archivos **Dockerfile**, que contienen las instrucciones necesarias para definir el entorno, instalar dependencias y copiar los archivos del proyecto dentro del contenedor.
 
 Con el fin de asegurar compatibilidad tanto con **Docker** como con **Podman**, se duplicaron estos archivos bajo el nombre **Containerfile**, dado que ambos gestores de contenedores interpretan el mismo formato.
+---
+## 📊Monitoreo en Tiempo Real con Netdata
+
+Se integró Netdata, una herramienta profesional para visualizar métricas en tiempo real:
+-CPU, RAM, discos y red
+-Estado de RAID y LVM
+-Actividad de contenedores Docker/Podman
+-Métricas por servicio (Apache, MySQL, Nginx)
+---
+## ▶️ Ejecución del contenedor Netdata con Podman
+sudo podman run -d --name netdata \
+  -p 19999:19999 \
+  -v netdataconfig:/etc/netdata:Z \
+  -v netdatalib:/var/lib/netdata:Z \
+  -v netdatacache:/var/cache/netdata:Z \
+  --cap-add SYS_PTRACE \
+  --security-opt label=disable \
+  docker.io/netdata/netdata:latest
+---
+## 🌍 Acceso al Dashboard Web
+http://localhost:19999
+---
+## 📌 Beneficios dentro del proyecto
+
+-Monitoreo profesional en tiempo real.
+-Validación del rendimiento de RAID/LVM bajo carga.
+-Seguimiento de contenedores Docker y Podman.
+-Supervisión de MySQL, Apache y Nginx en tiempo real.
+-Alertas y gráficos instantáneos
+---
 
 ### 📦 Archivos utilizados
 - `/docker_builds/apache/Dockerfile`  
