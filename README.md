@@ -63,10 +63,15 @@ Con el fin de asegurar compatibilidad tanto con **Docker** como con **Podman**, 
 ## 📊Monitoreo en Tiempo Real con Netdata
 
 Se integró Netdata, una herramienta profesional para visualizar métricas en tiempo real:
+
 -CPU, RAM, discos y red
+
 -Estado de RAID y LVM
+
 -Actividad de contenedores Docker/Podman
+
 -Métricas por servicio (Apache, MySQL, Nginx)
+
 ---
 ## ▶️ Ejecución del contenedor Netdata con Podman
 sudo podman run -d --name netdata \
