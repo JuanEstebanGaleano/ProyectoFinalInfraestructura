@@ -1,6 +1,6 @@
 #!/bin/bash
 ################################################################################
-# Script: infrastructure_setup.sh
+# Script: restore_podman.sh
 # Autor: Juan Esteban Galeano
 # Proyecto Final - Infraestructura Virtual
 # Objetivo: Levantar toda la infraestructura (Podman + Netdata + LVM)
