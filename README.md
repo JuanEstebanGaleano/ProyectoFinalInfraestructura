@@ -372,7 +372,7 @@ sudo resize2fs /dev/vg_mysql/lv_mysql
 
 ## 📚 Documentación Adicional
 
-- 📄 [Documento del proyecto completo](Proyecto-Final.pdf)
+- 📄 [Documento del proyecto completo](ProyectoFinal.pdf)
 - 📋 [Bitácora del proyecto](BITACORA.md)
 - 🔧 [Referencia de comandos](Comandos.md)
 - 📘 [Documentación de Podman](https://docs.podman.io/)
@@ -408,5 +408,3 @@ Este proyecto es de carácter académico para la asignatura de Infraestructura V
 
 **Desarrollado con 💙 para Infraestructura Virtual 2025**
 
-│   └── restore_docker.sh
-|   └── restore_podman.sh
