@@ -534,6 +534,30 @@ sudo podman run -d --name netdata \
 **Conclusión FASE 5:** ✅ Netdata operativo monitoreando toda la infraestructura.
 
 ---
+## CAPTURAS
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-07%20211215.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-07%20212522.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-07%20212654.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-07%20212847.png)
+
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20000234.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20000315.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20000333.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20000344.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20000404.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20000414.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20000435.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20000514.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20001836.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20002100.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20004927.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20004941.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20005015.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-11%20005051.png)
+
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-12%20090005.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-12%20090020.png)
+![Captura](Capturas%20Proyecto/Captura%20de%20pantalla%202025-11-12%20090034.png)
 
 ## 📊 CONCLUSIONES
 
